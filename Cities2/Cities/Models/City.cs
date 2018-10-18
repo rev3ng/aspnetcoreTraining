@@ -10,5 +10,8 @@ namespace Cities.Models {
 
         [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public int? Population { get; set; }
+
+		[Display(Name = "Uwagi")]
+		public string Notes { get; set; }
     }
 }
