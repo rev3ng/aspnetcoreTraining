@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Users.Infrastructure;
 using Users.Models;
 
 namespace Users
@@ -22,12 +23,22 @@ namespace Users
 		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddTransient<IPasswordValidator<AppUser>, CustomPasswordValidator>();
+
 			services.AddDbContext<AppIdentityDbContext>(options =>
 				options.UseSqlServer(
 					Configuration["Data:SportStoreIdentity:ConnectionString"]));
 
-			services.AddIdentity<AppUser, IdentityRole>()
-				.AddEntityFrameworkStores<AppIdentityDbContext>()
+			services.AddIdentity<AppUser, IdentityRole>(opts =>
+				{
+					opts.User.RequireUniqueEmail = true;
+					//opts.User.AllowedUserNameCharacters = "qwertyuioplkjhgfdsazxcvbnm";
+					opts.Password.RequiredLength = 6;
+					opts.Password.RequireNonAlphanumeric = false;
+					opts.Password.RequireLowercase = false;
+					opts.Password.RequireUppercase = false;
+					opts.Password.RequireDigit = false;
+				}).AddEntityFrameworkStores<AppIdentityDbContext>()
 				.AddDefaultTokenProviders();
 
 			services.AddMvc();
